@@ -4,6 +4,7 @@ model:
 data:
   train_csv: data/cleaned_data_utf8.csv
   inference_csv: data/test.csv
+  infer_batch_size: 2
 
 train:
   do_train: True
