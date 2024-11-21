@@ -46,6 +46,7 @@ def load_and_process_data(file_path):
         records.append(record)
 
     df = pd.DataFrame(records)
+    df['question_plus'] = df['question_plus'].fillna('')
     return Dataset.from_pandas(df)
 
 def format_dataset(dataset):
