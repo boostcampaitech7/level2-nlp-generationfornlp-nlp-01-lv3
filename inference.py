@@ -46,7 +46,7 @@ def main(config):
 
             infer_results.append({"id": _id, "answer": predict_value})
 
-    pd.DataFrame(infer_results).to_csv("outputs/output_llama.csv", index=False)
+    pd.DataFrame(infer_results).to_csv(data_args.output_csv, index=False)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run inference")
