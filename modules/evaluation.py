@@ -11,7 +11,7 @@ def preprocess_logits_for_metrics(logits, labels, tokenizer):
     logits = logits[:, -2, logit_idx]  # -2: answer token, -1: eos token
     return logits
 
-def compute_metrics(evaluation_result, tokenizer):
+def compute_metrics(evaluation_result, tokenizer, compute_metrics_end_token):
     """
     Compute metrics using the evaluation result (logits and labels).
     """
@@ -24,7 +24,7 @@ def compute_metrics(evaluation_result, tokenizer):
     # Replace padding labels with the tokenizer pad token id
     labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
     labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
-    labels = list(map(lambda x: x.split("<end_of_turn>")[0].strip(), labels))
+    labels = list(map(lambda x: x.split(compute_metrics_end_token)[0].strip(), labels))
     labels = list(map(lambda x: int_output_map[x], labels))
 
     # Apply softmax to logits and get predictions

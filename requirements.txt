@@ -9,3 +9,4 @@ evaluate
 peft
 omegaconf
 pre-commit
+bitsandbytes

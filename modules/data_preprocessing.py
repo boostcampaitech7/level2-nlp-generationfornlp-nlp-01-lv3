@@ -2,33 +2,6 @@ import pandas as pd
 from datasets import Dataset
 from ast import literal_eval
 
-PROMPT_NO_QUESTION_PLUS = """지문:
-{paragraph}
-
-질문:
-{question}
-
-선택지:
-{choices}
-
-1, 2, 3, 4, 5 중에 하나를 정답으로 고르세요.
-정답:"""
-
-PROMPT_QUESTION_PLUS = """지문:
-{paragraph}
-
-질문:
-{question}
-
-<보기>:
-{question_plus}
-
-선택지:
-{choices}
-
-1, 2, 3, 4, 5 중에 하나를 정답으로 고르세요.
-정답:"""
-
 def load_and_process_data(file_path):
     dataset = pd.read_csv(file_path)
     
@@ -49,20 +22,20 @@ def load_and_process_data(file_path):
     df['question_plus'] = df['question_plus'].fillna('')
     return Dataset.from_pandas(df)
 
-def format_dataset(dataset):
+def format_dataset(dataset, prompt_args):
     processed_dataset = []
     for i in range(len(dataset)):
         choices_string = "\n".join([f"{idx + 1} - {choice}" for idx, choice in enumerate(dataset[i]["choices"])])
 
         if dataset[i]["question_plus"]:
-            user_message = PROMPT_QUESTION_PLUS.format(
+            user_message = prompt_args.PROMPT_QUESTION_PLUS.format(
                 paragraph=dataset[i]["paragraph"],
                 question=dataset[i]["question"],
                 question_plus=dataset[i]["question_plus"],
                 choices=choices_string,
             )
         else:
-            user_message = PROMPT_NO_QUESTION_PLUS.format(
+            user_message = prompt_args.PROMPT_NO_QUESTION_PLUS.format(
                 paragraph=dataset[i]["paragraph"],
                 question=dataset[i]["question"],
                 choices=choices_string,
@@ -80,7 +53,7 @@ def format_dataset(dataset):
 
     return Dataset.from_pandas(pd.DataFrame(processed_dataset))
 
-def format_inference_dataset(test_df):
+def format_inference_dataset(test_df, prompt_args):
     test_dataset = []
     for i, row in test_df.iterrows():
         choices_string = "\n".join([f"{idx + 1} - {choice}" for idx, choice in enumerate(row["choices"])])
@@ -88,7 +61,7 @@ def format_inference_dataset(test_df):
         
         # <보기>가 있을 때
         if row["question_plus"]:
-            user_message = PROMPT_QUESTION_PLUS.format(
+            user_message = prompt_args.PROMPT_QUESTION_PLUS.format(
                 paragraph=row["paragraph"],
                 question=row["question"],
                 question_plus=row["question_plus"],
@@ -96,7 +69,7 @@ def format_inference_dataset(test_df):
             )
         # <보기>가 없을 때
         else:
-            user_message = PROMPT_NO_QUESTION_PLUS.format(
+            user_message = prompt_args.PROMPT_NO_QUESTION_PLUS.format(
                 paragraph=row["paragraph"],
                 question=row["question"],
                 choices=choices_string,
@@ -114,4 +87,4 @@ def format_inference_dataset(test_df):
             }
         )
 
-    return test_dataset # Dataset.from_pandas(pd.DataFrame(test_dataset))
+    return test_dataset

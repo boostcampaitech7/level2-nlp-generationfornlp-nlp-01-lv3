@@ -34,6 +34,6 @@ def tokenize_dataset(dataset, tokenizer):
         desc="Tokenizing",
     )
 
-def split_dataset(tokenized_dataset):
-    tokenized_dataset = tokenized_dataset.filter(lambda x: len(x["input_ids"]) <= 1024)  
-    return tokenized_dataset.train_test_split(test_size=0.1, seed=42)
+def split_dataset(tokenized_dataset, data_args, seed):
+    tokenized_dataset = tokenized_dataset.filter(lambda x: len(x["input_ids"]) <= data_args.tokenize_max_length)  
+    return tokenized_dataset.train_test_split(test_size=data_args.train_test_split_ratio, seed=seed)
