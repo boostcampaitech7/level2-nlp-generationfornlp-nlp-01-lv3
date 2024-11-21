@@ -1,4 +1,3 @@
-from transformers import DataCollatorForCompletionOnlyLM
 from datasets import Dataset
 
 def tokenize_dataset(dataset, tokenizer):

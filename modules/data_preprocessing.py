@@ -78,3 +78,39 @@ def format_dataset(dataset):
         })
 
     return Dataset.from_pandas(pd.DataFrame(processed_dataset))
+
+def format_inference_dataset(test_df):
+    test_dataset = []
+    for i, row in test_df.iterrows():
+        choices_string = "\n".join([f"{idx + 1} - {choice}" for idx, choice in enumerate(row["choices"])])
+        len_choices = len(row["choices"])
+        
+        # <보기>가 있을 때
+        if row["question_plus"]:
+            user_message = PROMPT_QUESTION_PLUS.format(
+                paragraph=row["paragraph"],
+                question=row["question"],
+                question_plus=row["question_plus"],
+                choices=choices_string,
+            )
+        # <보기>가 없을 때
+        else:
+            user_message = PROMPT_NO_QUESTION_PLUS.format(
+                paragraph=row["paragraph"],
+                question=row["question"],
+                choices=choices_string,
+            )
+
+        test_dataset.append(
+            {
+                "id": row["id"],
+                "messages": [
+                    {"role": "system", "content": "지문을 읽고 질문의 답을 구하세요."},
+                    {"role": "user", "content": user_message},
+                ],
+                "label": row["answer"],
+                "len_choices": len_choices,
+            }
+        )
+
+    return test_dataset # Dataset.from_pandas(pd.DataFrame(test_dataset))

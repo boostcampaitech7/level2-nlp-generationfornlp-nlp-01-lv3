@@ -1,22 +1,22 @@
 model:
-  model_name_or_path: beomi/gemma-ko-2b
+  model_name_or_path: models/gemma/checkpoint-4416 #beomi/gemma-ko-2b
 
 data:
-  train_csv: ../data/cleaned_data.csv
-  inference_csv: ../data/test.csv
+  train_csv: data/cleaned_data_utf8.csv
+  inference_csv: data/test.csv
 
 train:
   do_train: True
   do_eval: True
   lr_scheduler_type: cosine
   max_seq_length: 1024
-  output_dir: outputs_gemma
+  output_dir: models/gemma
   per_device_train_batch_size: 1
   per_device_eval_batch_size: 1
   num_train_epochs: 3
   learning_rate: 2e-5
   weight_decay: 0.01
-  logging_steps: 1
+  logging_steps: 300
   save_strategy: epoch
   eval_strategy: epoch
   save_total_limit: 2

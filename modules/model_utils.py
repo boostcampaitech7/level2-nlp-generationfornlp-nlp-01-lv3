@@ -1,5 +1,5 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from peft import LoraConfig
+from peft import LoraConfig, AutoPeftModelForCausalLM
 import torch
 
 def load_model_and_tokenizer(model_name_or_path):
@@ -24,3 +24,12 @@ def get_peft_config():
         bias="none",
         task_type="CAUSAL_LM",
     )
+
+def load_inference_model_and_tokenizer(model_name_or_path):
+    model = AutoPeftModelForCausalLM.from_pretrained(
+        model_name_or_path, trust_remote_code=True, device_map="auto",
+    )
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_name_or_path, trust_remote_code=True
+    )
+    return model, tokenizer
