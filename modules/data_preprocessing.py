@@ -44,7 +44,7 @@ def format_dataset(dataset, prompt_args):
         processed_dataset.append({
             "id": dataset[i]["id"],
             "messages": [
-                {"role": "system", "content": "지문을 읽고 질문의 답을 구하세요."},
+                {"role": "system", "content": prompt_args.system_message},
                 {"role": "user", "content": user_message},
                 {"role": "assistant", "content": f"{dataset[i]['answer']}"}
             ],
@@ -79,7 +79,7 @@ def format_inference_dataset(test_df, prompt_args):
             {
                 "id": row["id"],
                 "messages": [
-                    {"role": "system", "content": "지문을 읽고 질문의 답을 구하세요."},
+                    {"role": "system", "content": prompt_args.system_message},
                     {"role": "user", "content": user_message},
                 ],
                 "label": row["answer"],

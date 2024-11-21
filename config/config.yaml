@@ -79,9 +79,9 @@ prompt:
 
     {% for message in messages %}
         {% if message['role'] == 'user' %}
-            {{ '<|start_header_id|>user<|end_header_id|>\n\n' + message['content'] + '<|eot_id|>' }}
+            {{ '<|start_header_id|>user<|end_header_id|>\n\n' + message['content'] + '<|eot_id|>' + '<|start_header_id|>assistant<|end_header_id|>\n\n'}}
         {% elif message['role'] == 'assistant' %}
-            {{ '<|start_header_id|>assistant<|end_header_id|>\n\n' + message['content'] + '<|eot_id|>' }}
+            {{ message['content'] + '<|eot_id|>' }}
         {% endif %}
     {% endfor %}
 
@@ -95,3 +95,4 @@ prompt:
   # evaluation.py의 compute_metrics에서 정답 분리할 때 쓰는 compute_metrics_split
   compute_metrics_end_token: <|eot_id|> # <end_of_turn>
 
+  system_message: 지문을 읽고 질문의 답을 구하세요.
