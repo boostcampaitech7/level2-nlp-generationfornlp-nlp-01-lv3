@@ -34,8 +34,8 @@ peft:
   lora_alpha: 8
   lora_dropout: 0.05
   target_modules: ['q_proj', 'k_proj']
-  bias: none
-  task_type: CASUAL_LM
+  bias: null
+  task_type: CAUSAL_LM
 
 prompt:
   PROMPT_NO_QUESTION_PLUS: |
