@@ -152,7 +152,8 @@ prompt:
 
     1, 2, 3, 4, 5 중에 하나를 정답으로 고르세요.
     정답:
-  
+
+  # tokenizer.chat_template에 쓸 설정. default 기입시 따로 설정을 안해주고 기존 tokenizer의 chat_template을 사용한다.
   tokenizer_chat_template: "{% if messages[0]['role'] == 'system' %}{% set system_message = messages[0]['content'] %}{% endif %}{% if system_message is defined %}{{ system_message }}{% endif %}{% for message in messages %}{% set content = message['content'] %}{% if message['role'] == 'user' %}{{ '<start_of_turn>user\n' + content + '<end_of_turn>\n<start_of_turn>model\n' }}{% elif message['role'] == 'assistant' %}{{ content + '<end_of_turn>\n' }}{% endif %}{% endfor %}"
   # |
   #   {% set system_message = None %}

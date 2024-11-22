@@ -72,9 +72,30 @@ prompt:
     1, 2, 3, 4, 5 중에 하나를 정답으로 고르세요.
     정답:
   
-  tokenizer_chat_template: default
+  tokenizer_chat_template: "{% if messages[0]['role'] == 'system' %}{% set system_message = messages[0]['content'] %}{% endif %}{% if system_message is defined %}{{ system_message }}{% endif %}{% for message in messages %}{% set content = message['content'] %}{% if message['role'] == 'user' %}{{ '<start_of_turn>user\n' + content + '<end_of_turn>\n<start_of_turn>model\n' }}{% elif message['role'] == 'assistant' %}{{ content + '<end_of_turn>\n' }}{% endif %}{% endfor %}"
+  # |
+  #   {% set system_message = None %}
+  #   {% if messages[0]['role'] == 'system' %}
+  #       {% set system_message = '<|start_header_id|>system<|end_header_id|>\n\n' + messages[0]['content'] + '<|eot_id|>' %}
+  #   {% endif %}
+
+  #   {% if system_message is not none %}
+  #       {{ bos_token + system_message }}
+  #   {% endif %}
+
+  #   {% for message in messages %}
+  #       {% if message['role'] == 'user' %}
+  #           {{ '<|start_header_id|>user<|end_header_id|>\n\n' + message['content'] + '<|eot_id|>' + '<|start_header_id|>assistant<|end_header_id|>\n\n'}}
+  #       {% elif message['role'] == 'assistant' %}
+  #           {{ message['content'] + '<|eot_id|>' }}
+  #       {% endif %}
+  #   {% endfor %}
+
+  #   {% if add_generation_prompt %}
+  #       {{ '<|start_header_id|>assistant<|end_header_id|>\n\n' }}
+  #   {% endif %}
   
-  response_template: "<|start_header_id|>assistant<|end_header_id|>\n\n"
+  response_template: <start_of_turn>model # <|start_header_id|>assistant<|end_header_id|>\n\n # <start_of_turn>model
   
   # evaluation.py의 compute_metrics에서 정답 분리할 때 쓰는 compute_metrics_split
   compute_metrics_end_token: "<|eot_id|>"
