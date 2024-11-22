@@ -16,6 +16,7 @@ def main(config):
     formatted_dataset = format_dataset(dataset, prompt_args)
 
     model, tokenizer = load_model_and_tokenizer(model_args.model_name_or_path, prompt_args.tokenizer_chat_template)
+    peft_args = OmegaConf.to_container(peft_args, resolve=True)
     peft_config = LoraConfig(**peft_args)
 
     tokenized_dataset = tokenize_dataset(formatted_dataset, tokenizer)

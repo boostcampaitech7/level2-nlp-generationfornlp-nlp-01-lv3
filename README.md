@@ -7,15 +7,15 @@
 ## Members' Role
 | Member | Role | 
 | --- | --- |
-| 정준한 | EDA, 코드 모듈화, BM25 추가, 도메인 적응 코드 추가 |
-| 이수진 | BM25 Plus추가, Pre-trained 모델 실험, 리트리버 성능 실험 |
-| 육지훈 | EDA, 하이퍼파라미터 서치, 성능 검증 코드 제작, Inference 후처리 |
-| 전진 | EDA, 리트리버 실험 설계, 리트리버 성능 개선  |
-| 이금상 | EDA, Pre-trained 모델 실험, 리트리버 성능 실험 |
-| 허윤서 | Retrieved data EDA, Cross, Bi-encoder DPR & Re-rank |
+| 정준한 | 과목 분류, 모듈화, 추론속도 향상 |
+| 이수진 | EDA, 이상치 탐지, 과목별 모델성능 분석 |
+| 육지훈 | EDA, 이상치 탐지, 모델 실험, choice 순서 변경 |
+| 전진 | EDA,  |
+| 이금상 | 외부데이터셋 탐색 |
+| 허윤서 | 모델 성능 분석, 기타 utils 구현 |
 
 ### 랩업 리포트
-- [Wrap-up report](profile/MRC_NLP_%ED%8C%80%20%EB%A6%AC%ED%8F%AC%ED%8A%B8(03%EC%A1%B0).pdf)
+- 아직 x
 
 ### 0. 설치
 
