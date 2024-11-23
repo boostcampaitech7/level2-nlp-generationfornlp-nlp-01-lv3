@@ -20,7 +20,7 @@ def main(config):
     peft_config = LoraConfig(**peft_args)
 
     tokenized_dataset = tokenize_dataset(formatted_dataset, tokenizer)
-    train_dataset, eval_dataset = split_dataset(tokenized_dataset, data_args, config.seed).values()
+    train_dataset, eval_dataset = split_dataset(tokenized_dataset, data_args, config.seed) # .values()
 
     response_template = prompt_args.response_template
     data_collator = DataCollatorForCompletionOnlyLM(

@@ -68,28 +68,39 @@ prompt:
     정답:
   
   tokenizer_chat_template: default
+  {% set loop_messages = messages %}{% for message in loop_messages %}{% set content = '<|start_header_id|>' + message['role'] + '<|end_header_id|>
+
+'+ message['content'] | trim + '<|eot_id|>' %}{% if loop.index0 == 0 %}{% set content = bos_token + content %}{% endif %}{{ content }}{% endfor %}{% if add_generation_prompt %}{{ '<|start_header_id|>assistant<|end_header_id|>
+
+' }}{% endif %}
+
+"{% if messages[0]['role'] == 'system' %}{% set system_message = messages[0]['content'] %}{% endif %}{% if system_message is defined %}{{ system_message }}{% endif %}{% for message in messages %}{% set content = message['content'] %}{% if message['role'] == 'user' %}{{ '<start_of_turn>user\n' + content + '<end_of_turn>\n<start_of_turn>model\n' }}{% elif message['role'] == 'assistant' %}{{ content + '<end_of_turn>\n' }}{% endif %}{% endfor %}"
+
+"{% set system_message = None %}{% if messages[0]['role'] == 'system' %}{% set system_message = '<|start_header_id|>system<|end_header_id|>\n\n' + messages[0]['content'] + '<|eot_id|>' %}{% endif %}{% if system_message is not none %}{{ bos_token + system_message }}{% endif %}{% for message in messages %}{% if message['role'] == 'user' %}{{ '<|start_header_id|>user<|end_header_id|>\n\n' + message['content'] + '<|eot_id|>' + '<|start_header_id|>assistant<|end_header_id|>\n\n'}}{% elif message['role'] == 'assistant' %}{{ message['content'] + '<|eot_id|>' }}{% endif %}{% endfor %}"
+
+"{% if add_generation_prompt %}{{ '<|start_header_id|>assistant<|end_header_id|>\n\n' }}{% endif %}"
   # "{% if messages[0]['role'] == 'system' %}{% set system_message = messages[0]['content'] %}{% endif %}{% if system_message is defined %}{{ system_message }}{% endif %}{% for message in messages %}{% set content = message['content'] %}{% if message['role'] == 'user' %}{{ '<start_of_turn>user\n' + content + '<end_of_turn>\n<start_of_turn>model\n' }}{% elif message['role'] == 'assistant' %}{{ content + '<end_of_turn>\n' }}{% endif %}{% endfor %}"
   # |
-  #   {% set system_message = None %}
-  #   {% if messages[0]['role'] == 'system' %}
-  #       {% set system_message = '<|start_header_id|>system<|end_header_id|>\n\n' + messages[0]['content'] + '<|eot_id|>' %}
-  #   {% endif %}
+    {% set system_message = None %}
+    {% if messages[0]['role'] == 'system' %}
+        {% set system_message = '<|start_header_id|>system<|end_header_id|>\n\n' + messages[0]['content'] + '<|eot_id|>' %}
+    {% endif %}
 
-  #   {% if system_message is not none %}
-  #       {{ bos_token + system_message }}
-  #   {% endif %}
+    {% if system_message is not none %}
+        {{ bos_token + system_message }}
+    {% endif %}
 
-  #   {% for message in messages %}
-  #       {% if message['role'] == 'user' %}
-  #           {{ '<|start_header_id|>user<|end_header_id|>\n\n' + message['content'] + '<|eot_id|>' + '<|start_header_id|>assistant<|end_header_id|>\n\n'}}
-  #       {% elif message['role'] == 'assistant' %}
-  #           {{ message['content'] + '<|eot_id|>' }}
-  #       {% endif %}
-  #   {% endfor %}
+    {% for message in messages %}
+        {% if message['role'] == 'user' %}
+            {{ '<|start_header_id|>user<|end_header_id|>\n\n' + message['content'] + '<|eot_id|>' + '<|start_header_id|>assistant<|end_header_id|>\n\n'}}
+        {% elif message['role'] == 'assistant' %}
+            {{ message['content'] + '<|eot_id|>' }}
+        {% endif %}
+    {% endfor %}
 
-  #   {% if add_generation_prompt %}
-  #       {{ '<|start_header_id|>assistant<|end_header_id|>\n\n' }}
-  #   {% endif %}
+    {% if add_generation_prompt %}
+        {{ '<|start_header_id|>assistant<|end_header_id|>\n\n' }}
+    {% endif %}
   
   response_template: <start_of_turn>model # <|start_header_id|>assistant<|end_header_id|>\n\n # <start_of_turn>model
   

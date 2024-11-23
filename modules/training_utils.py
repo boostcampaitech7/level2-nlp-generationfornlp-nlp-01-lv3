@@ -35,5 +35,8 @@ def tokenize_dataset(dataset, tokenizer):
     )
 
 def split_dataset(tokenized_dataset, data_args, seed):
-    tokenized_dataset = tokenized_dataset.filter(lambda x: len(x["input_ids"]) <= data_args.tokenize_max_length)  
-    return tokenized_dataset.train_test_split(test_size=data_args.train_test_split_ratio, seed=seed)
+    # tokenized_dataset = tokenized_dataset.filter(lambda x: len(x["input_ids"]) <= data_args.tokenize_max_length)
+    train_dataset = tokenized_dataset.select(range(1802))
+    test_dataset = tokenized_dataset.select(range(1802, 2003))
+    return train_dataset, test_dataset
+    # return tokenized_dataset.train_test_split(test_size=data_args.train_test_split_ratio, seed=seed)
