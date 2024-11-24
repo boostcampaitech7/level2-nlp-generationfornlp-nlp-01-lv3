@@ -10,3 +10,6 @@ peft
 omegaconf
 pre-commit
 bitsandbytes
+datasets
+transformers
+peft
