@@ -1,11 +1,11 @@
 model:
-  model_name_or_path: Qwen/Qwen2.5-14B-Instruct # models/bllossom_aug/checkpoint-1400 # Bllossom/llama-3.2-Korean-Bllossom-3B
+  model_name_or_path: upstage/solar-pro-preview-instruct # models/bllossom_aug/checkpoint-1400 # Bllossom/llama-3.2-Korean-Bllossom-3B
   load_in_8b: True
 
 data:
   train_csv: data/combined_cleaned_org.csv
   inference_csv: data/test.csv
-  output_csv: outputs/qwen_14B_zeroshot.csv
+  output_csv: outputs/solar_pro_zeroshot.csv
   train_test_split_ratio: 0.1
   tokenize_max_length: 1800
 
