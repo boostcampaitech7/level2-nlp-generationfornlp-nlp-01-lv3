@@ -1,0 +1,134 @@
+model:
+  model_name_or_path: models/aya/checkpoint-300 # NCSOFT/Llama-VARCO-8B-Instruct # models/bllossom_aug/checkpoint-1400 # Bllossom/llama-3.2-Korean-Bllossom-3B
+  load_in_8b: True
+
+data:
+  train_csv: data/combined_x2.csv
+  inference_csv: data/test.csv
+  output_csv: outputs/output_aya_300_one_shot.csv
+  train_test_split_ratio: 0.1
+  tokenize_max_length: 1800
+
+train:
+  do_train: True
+  do_eval: True
+  lr_scheduler_type: cosine
+  max_seq_length: 1800
+  output_dir: models/varco_aug_x2_sys_message
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 8
+  max_steps: 800
+  learning_rate: 5e-5
+  weight_decay: 0.01
+  logging_steps: 20
+  save_strategy: steps
+  eval_strategy: steps
+  eval_steps: 100
+  save_steps: 100
+  save_total_limit: 5
+  save_only_model: True
+  fp16: True
+  warmup_steps: 500
+  report_to: none
+
+seed: 42
+
+peft:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.1
+  target_modules: ['q_proj', 'k_proj', 'v_proj']
+  bias: none
+  task_type: CAUSAL_LM
+
+prompt:
+  PROMPT_NO_QUESTION_PLUS: |
+    <예시>
+    
+    지문:
+    다음은 한 발표자의 환경 문제에 대한 발표 내용입니다.
+    
+    안녕하세요, 여러분. 오늘은 우리가 일상 속에서 접하는 플라스틱 제품의 재활용 문제에 대해 이야기해보겠습니다. (청중의 반응을 확인하며) 여러분 중 일부는 이미 플라스틱의 재활용 과정에 대해 잘 알고 있을 겁니다. 그러나 재활용이 실제로 어떻게 이루어지는지, 또 어떤 한계가 있는지는 잘 모를 수도 있겠지요.
+    (㉠(화면) 제시) 여기 보이는 그래프는 국내 플라스틱 폐기물의 재활용률 변화를 나타낸 것입니다. 최근 몇 년 동안 재활용률이 점차 감소하고 있다는 점이 보이시죠? 왜 그럴까요? 이유는 여러 가지가 있겠지만, 가장 큰 문제 중 하나는 우리가 사용하는 플라스틱 제품이 재활용이 어렵게 설계되어 있다는 점입니다.
+    일례로, (㉡(화면) 제시) 우리가 흔히 사용하는 커피 컵 뚜껑에는 서로 다른 종류의 플라스틱이 사용됩니다. 이렇게 여러 가지 플라스틱이 결합된 제품은 분리 배출 과정에서 혼란을 일으키고, 재활용 공정을 어렵게 만듭니다.
+    재활용률을 높이기 위해 우리가 할 수 있는 방법은 무엇일까요? 먼저, 소비자로서 분리배출을 제대로 해야 합니다. (청중의 질문을 듣고) 네, 맞습니다. 그런데 분리배출만으로는 충분하지 않습니다. 제품을 설계하는 단계에서부터 재활용 가능성을 고려해야 합니다. 예를 들어, (㉢(화면) 제시) 한 가지 재질로만 만들어진 제품은 재활용 과정에서 효율적일 뿐만 아니라, 환경적 부담도 줄일 수 있습니다.
+    플라스틱 문제를 해결하기 위해 정부와 기업이 협력해야 하며, 소비자인 우리도 이에 동참해야 합니다. 오늘 발표가 여러분에게 플라스틱 재활용에 대해 더 깊이 생각해 보는 계기가 되었길 바랍니다.
+    
+    질문:
+    위 발표에 활용된 발표 전략으로 적절하지 않은 것은?
+    
+    선택지:
+    1번 - 청중의 주의를 끌기 위해 통계 자료를 활용한다.
+    2번 - 청중의 이해를 돕기 위해 복잡한 개념을 시각 자료로 설명한다.
+    3번 - 청중의 공감을 이끌어내기 위해 청중이 직면한 문제를 언급한다.
+    4번 - 청중의 질문에 대해 발표자가 준비한 내용과 무관한 정보를 제시한다.
+    5번 - 해결 방안을 제안하며 청중에게 참여를 독려한다.
+    
+    1, 2, 3, 4, 5 중에 하나를 정답으로 고르세요.
+    정답: 4
+
+    <문제>
+    
+    지문:
+    {paragraph}
+
+    질문:
+    {question}
+
+    선택지:
+    {choices}
+
+    1, 2, 3, 4, 5 중에 하나를 정답으로 고르세요.
+    정답:
+    
+  PROMPT_QUESTION_PLUS: |
+    <예시>
+    
+    지문:
+    다음 글을 읽고 물음에 답하시오.
+    철학자 플라톤은 "동굴의 비유"에서 인간의 인식과 진리를 탐구한다. 그는 인간들이 동굴 안에 갇혀 있다고 비유하며, 동굴 벽에 비치는 그림자만을 현실이라고 믿는 이들의 상태를 설명한다. 그림자는 동굴 바깥에서 들어오는 빛과 외부 사물에 의해 만들어지며, 이 빛은 동굴 밖의 태양을 상징한다. 동굴 안에서 태어나고 자란 사람들은 그림자만을 경험했기에, 그것이 실재라고 착각한다.
+    어느 날, 한 사람이 동굴에서 나와 빛나는 태양과 실제 사물을 경험하게 된다. 그는 처음엔 눈이 부셔 아무것도 보지 못했지만, 시간이 지나면서 점차 사물의 본질과 태양의 빛을 깨닫게 된다. 그는 자신이 오랜 시간 동안 그림자만을 진리로 믿었다는 사실을 알게 되고, 다른 이들에게 이 사실을 알리고자 동굴로 돌아간다. 그러나 동굴 안의 사람들은 그의 이야기를 이해하지 못하고, 심지어 그를 미쳤다고 여긴다.
+    플라톤은 이 비유를 통해 우리가 경험하는 세계는 이데아 세계의 그림자일 뿐임을 말하며, 참된 인식을 얻기 위해선 이데아를 탐구해야 한다고 주장한다. 그는 철학자의 역할을 동굴을 벗어나 참된 진리를 깨닫고 이를 다른 이들과 나누는 것으로 본다.
+
+    질문:
+    ＜보기＞를 참고할 때, 다음 내용 중 적절하지 않은 것은?
+
+    <보기>:
+    플라톤의 동굴 비유에서 공간은 물질 세계와 이데아 세계를 구분하는 상징적 도구로 활용된다. 동굴 내부는 인간이 감각 경험으로 인식하는 한계를 나타내며, 동굴 바깥은 이데아 세계, 즉 참된 진리를 상징한다. 한편, 동굴 안에서 밖으로 나가는 과정은 철학적 탐구의 과정을 나타낸다.
+
+    선택지:
+    1번 - 동굴 안의 그림자는 이데아 세계의 사물을 반영한 것으로, 감각 경험에 의한 왜곡된 인식을 상징하는군.
+    2번 - 동굴 밖으로 나온 사람이 태양을 경험한 것은 참된 진리를 깨달은 상태를 나타내는군.
+    3번 - 동굴 밖에서 동굴 안으로 다시 돌아온 사람은 감각 경험을 통해 얻은 진리를 동굴 안의 사람들에게 전달하려는 철학자의 역할을 수행하는군.
+    4번 - 동굴 내부와 바깥은 각각 감각 경험과 이성적 사유의 영역으로, 서로 완전히 분리된 세계를 의미하는군.
+    5번 - 철학자가 동굴을 나오는 과정은 인간이 참된 지식을 얻기 위해 감각적 인식을 넘어선 이성적 탐구를 수행하는 과정을 상징하는군.
+
+    1, 2, 3, 4, 5 중에 하나를 정답으로 고르세요.
+    정답: 4
+
+    <문제>
+    
+    지문:
+    {paragraph}
+
+    질문:
+    {question}
+
+    <보기>:
+    {question_plus}
+
+    선택지:
+    {choices}
+
+    1, 2, 3, 4, 5 중에 하나를 정답으로 고르세요.
+    정답:
+  
+  tokenizer_chat_template: "{% set system_message = None %}{% if messages[0]['role'] == 'system' %}{% set system_message = '<|start_header_id|>system<|end_header_id|>\n\n' + messages[0]['content'] + '<|eot_id|>' %}{% endif %}{% if system_message is not none %}{{ bos_token + system_message }}{% endif %}{% for message in messages %}{% if message['role'] == 'user' %}{{ '<|start_header_id|>user<|end_header_id|>\n\n' + message['content'] + '<|eot_id|>' + '<|start_header_id|>assistant<|end_header_id|>\n\n'}}{% elif message['role'] == 'assistant' %}{{ message['content'] + '<|eot_id|>' }}{% endif %}{% endfor %}"
+  
+  response_template: "<|start_header_id|>assistant<|end_header_id|>\n\n"
+  
+  # evaluation.py의 compute_metrics에서 정답 분리할 때 쓰는 compute_metrics_split
+  compute_metrics_end_token: "<|eot_id|>"
+
+  system_message: "당신은 지문을 읽고 객관식 문제의 정답을 찾는 AI 어시스턴트입니다. 지문을 분석한 뒤, 선택지 번호(1, 2, 3, 4, 5) 중 하나만 반환하세요. 추가 설명은 작성하지 마세요."

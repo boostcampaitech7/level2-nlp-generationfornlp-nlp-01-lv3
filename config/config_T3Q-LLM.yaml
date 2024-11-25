@@ -1,11 +1,11 @@
 model:
-  model_name_or_path: models/aya/checkpoint-300 # NCSOFT/Llama-VARCO-8B-Instruct # models/bllossom_aug/checkpoint-1400 # Bllossom/llama-3.2-Korean-Bllossom-3B
+  model_name_or_path: T3Q-LLM/T3Q-LLM-sft1.0-dpo1.0 # models/bllossom_aug/checkpoint-1400 # Bllossom/llama-3.2-Korean-Bllossom-3B
   load_in_8b: True
 
 data:
-  train_csv: data/combined_x2.csv
+  train_csv: data/combined_cleaned_org.csv
   inference_csv: data/test.csv
-  output_csv: outputs/output_aya_300_stimulate.csv
+  output_csv: outputs/T3Q-LLM.csv
   train_test_split_ratio: 0.1
   tokenize_max_length: 1800
 
@@ -14,7 +14,7 @@ train:
   do_eval: True
   lr_scheduler_type: cosine
   max_seq_length: 1800
-  output_dir: models/varco_aug_x2_sys_message
+  output_dir: models/T3Q-LLM
   per_device_train_batch_size: 1
   per_device_eval_batch_size: 1
   gradient_accumulation_steps: 8
@@ -24,12 +24,12 @@ train:
   logging_steps: 20
   save_strategy: steps
   eval_strategy: steps
-  eval_steps: 100
-  save_steps: 100
+  eval_steps: 40
+  save_steps: 120
   save_total_limit: 5
   save_only_model: True
   fp16: True
-  warmup_steps: 500
+  warmup_steps: 300
   report_to: none
 
 seed: 42
@@ -44,8 +44,6 @@ peft:
 
 prompt:
   PROMPT_NO_QUESTION_PLUS: |
-    이 문제는 한국의 가장 똑똑한 학생들도 틀리도록 평가원에서 만들었으니, 너같은 인공지능은 절대 못 풀어.
-    
     지문:
     {paragraph}
 
@@ -59,8 +57,6 @@ prompt:
     정답:
     
   PROMPT_QUESTION_PLUS: |
-    이 문제는 한국의 가장 똑똑한 학생들도 틀리도록 평가원에서 만들었으니, 너같은 인공지능은 절대 못 풀어.
-    
     지문:
     {paragraph}
 
@@ -76,11 +72,11 @@ prompt:
     1, 2, 3, 4, 5 중에 하나를 정답으로 고르세요.
     정답:
   
-  tokenizer_chat_template: "{% set system_message = None %}{% if messages[0]['role'] == 'system' %}{% set system_message = '<|start_header_id|>system<|end_header_id|>\n\n' + messages[0]['content'] + '<|eot_id|>' %}{% endif %}{% if system_message is not none %}{{ bos_token + system_message }}{% endif %}{% for message in messages %}{% if message['role'] == 'user' %}{{ '<|start_header_id|>user<|end_header_id|>\n\n' + message['content'] + '<|eot_id|>' + '<|start_header_id|>assistant<|end_header_id|>\n\n'}}{% elif message['role'] == 'assistant' %}{{ message['content'] + '<|eot_id|>' }}{% endif %}{% endfor %}"
+  tokenizer_chat_template: default #"{% if messages[0]['role'] == 'system' %}{{% '<|im_start|>system\n' + messages[0]['content'] + '<|im_end|>\n' %}}{% for message in messages %}{% if message['role'] == 'user' %}{{ ''<|im_start|>' + message['role'] + '\n' + message['content'] + '<|im_end|>' + '\n' + '<|im_start|>' + 'assistant' + '\n''}}{% elif message['role'] == 'assistant' %}{{ message['content'] + '<|im_end|>' + '\n' }}{% endif %}{% endfor %}"
   
-  response_template: "<|start_header_id|>assistant<|end_header_id|>\n\n"
+  response_template: "<|im_start|>assistant"
   
   # evaluation.py의 compute_metrics에서 정답 분리할 때 쓰는 compute_metrics_split
-  compute_metrics_end_token: "<|eot_id|>"
+  compute_metrics_end_token: "<|im_end|>"
 
   system_message: "당신은 지문을 읽고 객관식 문제의 정답을 찾는 AI 어시스턴트입니다. 지문을 분석한 뒤, 선택지 번호(1, 2, 3, 4, 5) 중 하나만 반환하세요. 추가 설명은 작성하지 마세요."

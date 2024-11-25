@@ -1,6 +1,5 @@
 ipykernel
 ipywidgets
-torch
 transformers
 trl
 scikit-learn
@@ -10,3 +9,6 @@ peft
 omegaconf
 pre-commit
 bitsandbytes
+datasets
+transformers
+peft

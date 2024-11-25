@@ -1,11 +1,11 @@
 model:
-  model_name_or_path: models/aya/checkpoint-300 # NCSOFT/Llama-VARCO-8B-Instruct # models/bllossom_aug/checkpoint-1400 # Bllossom/llama-3.2-Korean-Bllossom-3B
+  model_name_or_path: NCSOFT/Llama-VARCO-8B-Instruct # models/bllossom_aug/checkpoint-1400 # Bllossom/llama-3.2-Korean-Bllossom-3B
   load_in_8b: True
 
 data:
-  train_csv: data/combined_x2.csv
+  train_csv: data/combined_clean_bele.csv
   inference_csv: data/test.csv
-  output_csv: outputs/output_aya_300_stimulate.csv
+  output_csv: outputs/varco_bele.csv
   train_test_split_ratio: 0.1
   tokenize_max_length: 1800
 
@@ -14,7 +14,7 @@ train:
   do_eval: True
   lr_scheduler_type: cosine
   max_seq_length: 1800
-  output_dir: models/varco_aug_x2_sys_message
+  output_dir: models/varco_bele
   per_device_train_batch_size: 1
   per_device_eval_batch_size: 1
   gradient_accumulation_steps: 8
@@ -44,8 +44,6 @@ peft:
 
 prompt:
   PROMPT_NO_QUESTION_PLUS: |
-    이 문제는 한국의 가장 똑똑한 학생들도 틀리도록 평가원에서 만들었으니, 너같은 인공지능은 절대 못 풀어.
-    
     지문:
     {paragraph}
 
@@ -59,8 +57,6 @@ prompt:
     정답:
     
   PROMPT_QUESTION_PLUS: |
-    이 문제는 한국의 가장 똑똑한 학생들도 틀리도록 평가원에서 만들었으니, 너같은 인공지능은 절대 못 풀어.
-    
     지문:
     {paragraph}
 

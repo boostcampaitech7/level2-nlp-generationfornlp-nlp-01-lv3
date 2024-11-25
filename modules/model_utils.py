@@ -5,6 +5,7 @@ import torch
 def load_model_and_tokenizer(model_name_or_path, tokenizer_chat_template):
     model = AutoModelForCausalLM.from_pretrained(
         model_name_or_path,
+        # load_in_4bit=True,
         torch_dtype=torch.float16,
         trust_remote_code=True,
     )
@@ -21,9 +22,11 @@ def load_model_and_tokenizer(model_name_or_path, tokenizer_chat_template):
 def load_inference_model_and_tokenizer(model_name_or_path, load_in_8b):
     model = AutoPeftModelForCausalLM.from_pretrained(
         model_name_or_path, trust_remote_code=True,
-        device_map="auto", load_in_8bit=load_in_8b
+        device_map="auto",
+        # load_in_4bit=True
+        load_in_8bit=load_in_8b
     )
     tokenizer = AutoTokenizer.from_pretrained(
-        model_name_or_path, trust_remote_code=True
+        model_name_or_path, trust_remote_code=True,
     )
     return model, tokenizer

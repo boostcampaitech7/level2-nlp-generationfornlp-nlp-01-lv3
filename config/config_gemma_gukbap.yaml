@@ -1,20 +1,20 @@
 model:
-  model_name_or_path: NCSOFT/Llama-VARCO-8B-Instruct # models/bllossom_aug/checkpoint-1400 # Bllossom/llama-3.2-Korean-Bllossom-3B
+  model_name_or_path: HumanF-MarkrAI/Gukbap-Gemma2-9B # models/bllossom_aug/checkpoint-1400 # Bllossom/llama-3.2-Korean-Bllossom-3B
   load_in_8b: True
 
 data:
   train_csv: data/combined_cleaned_org.csv
   inference_csv: data/test.csv
-  output_csv: outputs/output_temp.csv
+  output_csv: outputs/output_gemma_9b_gukbap.csv
   train_test_split_ratio: 0.1
-  tokenize_max_length: 1800
+  tokenize_max_length: 1480
 
 train:
   do_train: True
   do_eval: True
   lr_scheduler_type: cosine
-  max_seq_length: 1800
-  output_dir: models/varco_temp
+  max_seq_length: 1480
+  output_dir: models/gemma_9b
   per_device_train_batch_size: 1
   per_device_eval_batch_size: 1
   gradient_accumulation_steps: 8
@@ -35,10 +35,10 @@ train:
 seed: 42
 
 peft:
-  r: 16
-  lora_alpha: 32
+  r: 8
+  lora_alpha: 16
   lora_dropout: 0.1
-  target_modules: ['q_proj', 'k_proj', 'v_proj']
+  target_modules: ['q_proj', 'k_proj']
   bias: none
   task_type: CAUSAL_LM
 
@@ -72,11 +72,11 @@ prompt:
     1, 2, 3, 4, 5 중에 하나를 정답으로 고르세요.
     정답:
   
-  tokenizer_chat_template: "{% set system_message = None %}{% if messages[0]['role'] == 'system' %}{% set system_message = '<|start_header_id|>system<|end_header_id|>\n\n' + messages[0]['content'] + '<|eot_id|>' %}{% endif %}{% if system_message is not none %}{{ bos_token + system_message }}{% endif %}{% for message in messages %}{% if message['role'] == 'user' %}{{ '<|start_header_id|>user<|end_header_id|>\n\n' + message['content'] + '<|eot_id|>' + '<|start_header_id|>assistant<|end_header_id|>\n\n'}}{% elif message['role'] == 'assistant' %}{{ message['content'] + '<|eot_id|>' }}{% endif %}{% endfor %}"
-  
-  response_template: "<|start_header_id|>assistant<|end_header_id|>\n\n"
+  tokenizer_chat_template: "{% set system_message = None %}{% if messages[0]['role'] == 'system' %}{% set system_message = 'messages[0]['content'] %}{% endif %}{% if system_message is not none %}{{ '<bos>' + system_message }}{% endif %}{% for message in messages %}{% if message['role'] == 'user' %}{{ '<start_of_turn>user\n' + message['content'] + '<end_of_turn>\n<start_of_turn>model\n' }}{% elif message['role'] == 'assistant' %}{{ message['content'] + '<end_of_turn>' }}{% endif %}{% endfor %}"
+
+  response_template: "<start_of_turn>model\n"
   
   # evaluation.py의 compute_metrics에서 정답 분리할 때 쓰는 compute_metrics_split
-  compute_metrics_end_token: "<|eot_id|>"
+  compute_metrics_end_token: "<end_of_turn>"
 
   system_message: "당신은 지문을 읽고 객관식 문제의 정답을 찾는 AI 어시스턴트입니다. 지문을 분석한 뒤, 선택지 번호(1, 2, 3, 4, 5) 중 하나만 반환하세요. 추가 설명은 작성하지 마세요."

@@ -1,11 +1,11 @@
 model:
-  model_name_or_path: models/varco_balance_sys_message/checkpoint-400 # NCSOFT/Llama-VARCO-8B-Instruct # models/bllossom_aug/checkpoint-1400 # Bllossom/llama-3.2-Korean-Bllossom-3B
+  model_name_or_path: models/aya_bele/checkpoint-300 # NCSOFT/Llama-VARCO-8B-Instruct # models/bllossom_aug/checkpoint-1400 # Bllossom/llama-3.2-Korean-Bllossom-3B
   load_in_8b: True
 
 data:
   train_csv: data/combined_x2.csv
   inference_csv: data/test.csv
-  output_csv: outputs/output_varco_balance_sys_message_400.csv
+  output_csv: outputs/output_aya_bele_300.csv
   train_test_split_ratio: 0.1
   tokenize_max_length: 1800
 
@@ -44,6 +44,8 @@ peft:
 
 prompt:
   PROMPT_NO_QUESTION_PLUS: |
+    이 문제는 저의 대학 입시에 매우 중요합니다. 저를 위해 꼭 정답을 찾아주세요.
+    
     지문:
     {paragraph}
 
@@ -57,6 +59,8 @@ prompt:
     정답:
     
   PROMPT_QUESTION_PLUS: |
+    이 문제는 저의 대학 입시에 매우 중요합니다. 저를 위해 꼭 정답을 찾아주세요.
+    
     지문:
     {paragraph}
 
