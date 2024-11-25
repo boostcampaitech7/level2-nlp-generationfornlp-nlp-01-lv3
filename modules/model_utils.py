@@ -20,13 +20,16 @@ def load_model_and_tokenizer(model_name_or_path, tokenizer_chat_template):
     return model, tokenizer
 
 def load_inference_model_and_tokenizer(model_name_or_path, load_in_8b):
-    model = AutoPeftModelForCausalLM.from_pretrained(
+    model = AutoModelForCausalLM.from_pretrained(
         model_name_or_path, trust_remote_code=True,
         device_map="auto",
-        load_in_4bit=True,
+        torch_dtype=torch.bfloat16
+        # load_in_4bit=True,
         # load_in_8bit=load_in_8b,
     )
     tokenizer = AutoTokenizer.from_pretrained(
         model_name_or_path, trust_remote_code=True,
     )
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
     return model, tokenizer
