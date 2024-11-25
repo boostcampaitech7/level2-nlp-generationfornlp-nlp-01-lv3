@@ -1,6 +1,6 @@
 from datasets import Dataset
 
-def tokenize_dataset(dataset, tokenizer):
+def tokenize_dataset(dataset, tokenizer, data_args):
     def formatting_prompts_func(example):
         output_texts = []
         for i in range(len(example["messages"])):
@@ -15,11 +15,12 @@ def tokenize_dataset(dataset, tokenizer):
     def tokenize(element):
         outputs = tokenizer(
             formatting_prompts_func(element),
-            truncation=False,
-            padding=False,
-            return_overflowing_tokens=False,
-            return_length=False,
+            truncation=True,
+            max_length=data_args.tokenize_max_length,
+            padding="max_length",
+            return_tensors="pt",
         )
+        
         return {
             "input_ids": outputs["input_ids"],
             "attention_mask": outputs["attention_mask"],
@@ -27,7 +28,7 @@ def tokenize_dataset(dataset, tokenizer):
 
     return dataset.map(
         tokenize,
-        remove_columns=list(dataset.features),
+        remove_columns=["messages", "label"],
         batched=True,
         num_proc=4,
         load_from_cache_file=True,
@@ -36,8 +37,8 @@ def tokenize_dataset(dataset, tokenizer):
 
 def split_dataset(tokenized_dataset, data_args, seed):
     # tokenized_dataset = tokenized_dataset.filter(lambda x: len(x["input_ids"]) <= data_args.tokenize_max_length)
-    train_dataset = tokenized_dataset.select(range(1802))   #2702))
-    test_dataset = tokenized_dataset.select(range(1802, 2001))   #2702, 2903))
+    train_dataset = tokenized_dataset.select(range(2702))
+    test_dataset = tokenized_dataset.select(range(2702, 2903))
     train_dataset = train_dataset.filter(lambda x: len(x["input_ids"]) <= data_args.tokenize_max_length)
     test_dataset = test_dataset.filter(lambda x: len(x["input_ids"]) <= data_args.tokenize_max_length)
     return train_dataset, test_dataset

@@ -1,0 +1,80 @@
+model:
+  model_name_or_path: Bllossom/llama-3.2-Korean-Bllossom-3B # models/bllossom_aug/checkpoint-1400 # Bllossom/llama-3.2-Korean-Bllossom-3B
+  load_in_8b: True
+
+data:
+  train_csv: data/combined_data_explain.csv
+  inference_csv: data/test.csv
+  output_csv: outputs/CoT_3b.csv
+  train_test_split_ratio: 0.1
+  tokenize_max_length: 2800
+
+train:
+  do_train: True
+  do_eval: True
+  lr_scheduler_type: cosine
+  max_seq_length: 2800
+  output_dir: models/CoT_3b
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 8
+  max_steps: 800
+  learning_rate: 5e-5
+  weight_decay: 0.01
+  logging_steps: 2
+  save_strategy: steps
+  eval_strategy: steps
+  eval_steps: 10
+  save_steps: 10
+  save_total_limit: 5
+  save_only_model: True
+  fp16: False
+  warmup_steps: 500
+  report_to: none
+
+seed: 42
+
+peft:
+  r: 8
+  lora_alpha: 16
+  lora_dropout: 0.1
+  target_modules: ['q_proj', 'k_proj']
+  bias: none
+  task_type: CAUSAL_LM
+
+prompt:
+  PROMPT_NO_QUESTION_PLUS: |
+    지문:
+    {paragraph}
+
+    질문:
+    {question}
+
+    선택지:
+    {choices}
+
+    풀이과정:
+    
+  PROMPT_QUESTION_PLUS: |
+    지문:
+    {paragraph}
+
+    질문:
+    {question}
+
+    <보기>:
+    {question_plus}
+
+    선택지:
+    {choices}
+
+    풀이과정:
+  
+  tokenizer_chat_template: default
+  
+  response_template: "<|start_header_id|>assistant<|end_header_id|>\n\n"
+  
+  # evaluation.py의 compute_metrics에서 정답 분리할 때 쓰는 compute_metrics_split
+  compute_metrics_end_token: "<|eot_id|>"
+
+  system_message: "당신은 지문을 읽고 객관식 문제의 정답을 찾는 AI 어시스턴트입니다. 지문을 분석한 뒤, 풀이과정을 단게별로 작성하고 정답을 고르세요"

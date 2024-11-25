@@ -19,7 +19,7 @@ def main(config):
     peft_args = OmegaConf.to_container(peft_args, resolve=True)
     peft_config = LoraConfig(**peft_args)
 
-    tokenized_dataset = tokenize_dataset(formatted_dataset, tokenizer)
+    tokenized_dataset = tokenize_dataset(formatted_dataset, tokenizer, data_args)
     train_dataset, eval_dataset = split_dataset(tokenized_dataset, data_args, config.seed) # .values()
 
     response_template = prompt_args.response_template
@@ -35,7 +35,7 @@ def main(config):
         eval_dataset=eval_dataset,
         data_collator=data_collator,
         tokenizer=tokenizer,
-        compute_metrics=lambda eval_res: compute_metrics(eval_res, tokenizer, prompt_args.compute_metrics_end_token),
+        compute_metrics=lambda eval_res: compute_metrics(eval_res, tokenizer),
         preprocess_logits_for_metrics=lambda logits, labels: preprocess_logits_for_metrics(logits, labels, tokenizer),
         peft_config=peft_config,
         args=sft_config,
