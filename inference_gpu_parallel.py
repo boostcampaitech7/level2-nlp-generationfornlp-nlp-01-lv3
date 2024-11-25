@@ -46,7 +46,7 @@ def main(rank, world_size, config):
 
             outputs = model.module.generate(
                 input_tensor,
-                max_new_tokens=2,
+                max_new_tokens=4,
                 pad_token_id=tokenizer.eos_token_id,
                 eos_token_id=tokenizer.eos_token_id,
                 do_sample=False,

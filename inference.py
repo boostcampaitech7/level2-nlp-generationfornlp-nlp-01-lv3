@@ -29,7 +29,7 @@ def main(config):
 
             outputs = model.generate(
                 input_tensor,
-                max_new_tokens=4,
+                max_new_tokens=1,
                 pad_token_id=tokenizer.eos_token_id,   
                 eos_token_id=tokenizer.eos_token_id,
                 do_sample=False,
