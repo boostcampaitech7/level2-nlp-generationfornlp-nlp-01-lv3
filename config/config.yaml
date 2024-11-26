@@ -1,24 +1,24 @@
 model:
-  model_name_or_path: Bllossom/llama-3.2-Korean-Bllossom-3B
-  load_in_8b: False
+  model_name_or_path: models/bllossom_clean/checkpoint-500 # models/bllossom_aug/checkpoint-1400 # Bllossom/llama-3.2-Korean-Bllossom-3B
+  load_in_8b: True
 
 data:
-  train_csv: data/cleaned_data.csv
+  train_csv: data/cleaned_data_utf8.csv
   inference_csv: data/test.csv
-  output_csv: outputs/output_Bllossom_cleaned.csv
+  output_csv: outputs/output_bllosom_clena_prompt.csv
   train_test_split_ratio: 0.1
-  tokenize_max_length: 1800
+  tokenize_max_length: 1480
 
 train:
   do_train: True
   do_eval: True
   lr_scheduler_type: cosine
-  max_seq_length: 1800
-  output_dir: models/bllossom_aug
+  max_seq_length: 1480
+  output_dir: models/rtzr_gemma
   per_device_train_batch_size: 1
   per_device_eval_batch_size: 1
   gradient_accumulation_steps: 8
-  num_train_epochs: 8
+  max_steps: 800
   learning_rate: 5e-5
   weight_decay: 0.01
   logging_steps: 20
@@ -44,6 +44,12 @@ peft:
 
 prompt:
   PROMPT_NO_QUESTION_PLUS: |
+    [예시]
+    지문: 해는 동쪽에서 뜨고 서쪽에서 진다.
+    질문: 해는 어디에서 뜨나요?
+    선택지: 1) 북쪽 2) 남쪽 3) 동쪽 4) 서쪽 5) 중앙
+    정답: 3  
+
     지문:
     {paragraph}
 
@@ -53,10 +59,16 @@ prompt:
     선택지:
     {choices}
 
-    1, 2, 3, 4, 5 중에 하나를 정답으로 고르세요.
+    예시와 같은 방식으로 1, 2, 3, 4, 5 중에 하나를 정답으로 고르세요.
     정답:
     
   PROMPT_QUESTION_PLUS: |
+    [예시]
+    지문: 해는 동쪽에서 뜨고 서쪽에서 진다.
+    질문: 해는 어디에서 뜨나요?
+    선택지: 1) 북쪽 2) 남쪽 3) 동쪽 4) 서쪽 5) 중앙
+    정답: 3 
+
     지문:
     {paragraph}
 
@@ -69,10 +81,11 @@ prompt:
     선택지:
     {choices}
 
-    1, 2, 3, 4, 5 중에 하나를 정답으로 고르세요.
+    예시와 같은 방식으로 1, 2, 3, 4, 5 중에 하나를 정답으로 고르세요.
     정답:
   
-  tokenizer_chat_template: "{% if messages[0]['role'] == 'system' %}{% set system_message = messages[0]['content'] %}{% endif %}{% if system_message is defined %}{{ system_message }}{% endif %}{% for message in messages %}{% set content = message['content'] %}{% if message['role'] == 'user' %}{{ '<start_of_turn>user\n' + content + '<end_of_turn>\n<start_of_turn>model\n' }}{% elif message['role'] == 'assistant' %}{{ content + '<end_of_turn>\n' }}{% endif %}{% endfor %}"
+  tokenizer_chat_template: default
+  # "{% if messages[0]['role'] == 'system' %}{% set system_message = messages[0]['content'] %}{% endif %}{% if system_message is defined %}{{ system_message }}{% endif %}{% for message in messages %}{% set content = message['content'] %}{% if message['role'] == 'user' %}{{ '<start_of_turn>user\n' + content + '<end_of_turn>\n<start_of_turn>model\n' }}{% elif message['role'] == 'assistant' %}{{ content + '<end_of_turn>\n' }}{% endif %}{% endfor %}"
   # |
   #   {% set system_message = None %}
   #   {% if messages[0]['role'] == 'system' %}
@@ -95,9 +108,9 @@ prompt:
   #       {{ '<|start_header_id|>assistant<|end_header_id|>\n\n' }}
   #   {% endif %}
   
-  response_template: <start_of_turn>model # <|start_header_id|>assistant<|end_header_id|>\n\n # <start_of_turn>model
+  response_template: "<|start_header_id|>assistant<|end_header_id|>\n\n" # <start_of_turn>model
   
   # evaluation.py의 compute_metrics에서 정답 분리할 때 쓰는 compute_metrics_split
-  compute_metrics_end_token: "<|eot_id|>"
+  compute_metrics_end_token: "<|eot_id|>" # <end_of_turn>
 
-  system_message: 지문을 읽고 질문의 답을 구하세요.
+  system_message: "당신은 지문을 읽고 객관식 문제의 정답을 찾는 AI 어시스턴트입니다. 지문을 분석한 뒤, 선택지 번호(1, 2, 3, 4, 5) 중 하나만 반환하세요. 추가 설명은 작성하지 마세요."
