@@ -1,0 +1,13 @@
+experiment_name: "RAG_with_WikiTest"
+retriever:
+  type: "dense"  # 또는 "sparse"
+  model_name: "sentence-transformers/all-mpnet-base-v2"
+generator:
+  type: "huggingface"
+  model_name: "Qwen2.5-14B-IT"
+datasets:
+  documents: "../rag_data/wiki_test_processed.jsonl"  # 전처리된 wiki 데이터
+  questions: "/data/ephemeral/home/sujin/RAG/questions_with_choices_and_plus.jsonl"       # 테스트 질문 데이터
+evaluation:
+  metrics: ["f1", "precision", "recall"]
+output_path: "./autorag_wikitest_results"
