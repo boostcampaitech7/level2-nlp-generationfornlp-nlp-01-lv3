@@ -3,8 +3,8 @@ import pandas as pd
 # File paths
 test_path = '/data/ephemeral/home/sujin/test_answer_gpt4o.csv'
 
-predictions_path = '/data/ephemeral/home/sujin/outputs/output_bllosom_clena_prompt.csv'
 
+predictions_path = '/data/ephemeral/home/sujin/zeroshot_result/output_logical2.csv'
 # Load data
 test = pd.read_csv(test_path)
 predictions = pd.read_csv(predictions_path)

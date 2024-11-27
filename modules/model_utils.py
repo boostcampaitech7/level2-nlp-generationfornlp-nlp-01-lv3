@@ -21,7 +21,7 @@ def load_model_and_tokenizer(model_name_or_path, tokenizer_chat_template):
 def load_inference_model_and_tokenizer(model_name_or_path, load_in_8b):
     model = AutoPeftModelForCausalLM.from_pretrained(
         model_name_or_path, trust_remote_code=True,
-        device_map="auto", load_in_8bit=load_in_8b
+        device_map="auto", load_in_4bit=True
     )
     tokenizer = AutoTokenizer.from_pretrained(
         model_name_or_path, trust_remote_code=True
