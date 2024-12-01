@@ -10,7 +10,7 @@
 | 정준한 | 과목 분류, 모듈화, 추론속도 향상 |
 | 이수진 | EDA, 이상치 탐지, 과목별 모델성능 분석 |
 | 육지훈 | EDA, 이상치 탐지, 모델 실험, choice 순서 변경, 제로샷 & 제로샷CoT 성능 분석 |
-| 전진 | EDA,  |
+| 전진 | EDA, 데이터 라벨링 및 전처리, 데이터 증강, RAG 구현 |
 | 이금상 | 외부데이터셋 탐색 |
 | 허윤서 | 모델 성능 분석, 기타 utils 구현 |
 
@@ -69,6 +69,11 @@ level2-nlp-generationfornlp-nlp-01-lv3
 |           |-- trainer_state.json
 |           `-- training_args.bin
 |-- modules # 실제 모든 모듈화 코드가 이곳에
+|   |-- RAG
+|   |   |-- add_data.py
+|   |   |-- dense.py
+|   |   |-- sparse.py
+|   |   `-- llm_keyword.py
 |   |-- data_preprocessing.py
 |   |-- evaluation.py
 |   |-- model_utils.py
