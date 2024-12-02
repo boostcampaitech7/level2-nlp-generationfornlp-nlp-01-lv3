@@ -97,3 +97,5 @@ prompt:
   compute_metrics_end_token: <end_of_turn> # <|eot_id|> # <end_of_turn>
 
   system_message: 지문을 읽고 질문의 답을 구하세요.
+
+  train_cot: False

@@ -15,6 +15,7 @@ def load_and_process_data(file_path):
             'choices': problems['choices'],
             'answer': problems.get('answer', None),
             "question_plus": problems.get('question_plus', None),
+            'explanation': row.get('explanation', None),
         }
         records.append(record)
 
@@ -26,6 +27,7 @@ def format_dataset(dataset, prompt_args):
     processed_dataset = []
     for i in range(len(dataset)):
         choices_string = "\n".join([f"{idx + 1} - {choice}" for idx, choice in enumerate(dataset[i]["choices"])])
+        cot_example = dataset[i].get("explanation", "이 문제를 해결하기 위해 지문에서 필요한 정보를 추출하고, 질문과 연관지어 정답을 유추합니다.")
 
         if dataset[i]["question_plus"]:
             user_message = prompt_args.PROMPT_QUESTION_PLUS.format(
@@ -41,15 +43,28 @@ def format_dataset(dataset, prompt_args):
                 choices=choices_string,
             )
 
-        processed_dataset.append({
+        assistant_message = f"{cot_example}\n정답: {dataset[i]['answer']}"
+
+        if prompt_args.use_cot:
+            processed_dataset.append({
             "id": dataset[i]["id"],
             "messages": [
                 {"role": "system", "content": prompt_args.system_message},
                 {"role": "user", "content": user_message},
-                {"role": "assistant", "content": f"{dataset[i]['answer']}"}
+                {"role": "assistant", "content": assistant_message}
             ],
-            "label": dataset[i]["answer"],
-        })
+            "label": assistant_message,
+            })
+        else:
+            processed_dataset.append({
+                "id": dataset[i]["id"],
+                "messages": [
+                    {"role": "system", "content": prompt_args.system_message},
+                    {"role": "user", "content": user_message},
+                    {"role": "assistant", "content": f"{dataset[i]['answer']}"}
+                ],
+                "label": dataset[i]["answer"],
+            })
 
     return Dataset.from_pandas(pd.DataFrame(processed_dataset))
 
