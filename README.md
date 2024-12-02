@@ -15,7 +15,7 @@
 | 허윤서 | 모델 성능 분석, 기타 utils 구현 |
 
 ### 랩업 리포트
-- 아직 x
+- [Wrap-up report]((https://drive.google.com/file/d/1PZLglAX1ZvBIweqwlBdGpo-KxSwhREAd/view?usp=sharing))
 
 ### 0. 설치
 ```Bash
