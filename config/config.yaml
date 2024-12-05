@@ -1,0 +1,101 @@
+model:
+  model_name_or_path: beomi/Llama-3-Open-Ko-8B # beomi/gemma-ko-2b # models/gemma/checkpoint-4416 #beomi/gemma-ko-2b
+  load_in_8b: True # 추론할 때, 8b 양자화
+
+data:
+  train_csv: data/train.csv
+  inference_csv: data/test.csv
+  output_csv: outputs/output_llama.csv
+  train_test_split_ratio: 0.1
+  tokenize_max_length: 1024 # 아래 train.max_seq_length도 같이 바꿔주기
+
+train:
+  do_train: True
+  do_eval: True
+  lr_scheduler_type: cosine
+  max_seq_length: 1024
+  output_dir: models/llama
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  num_train_epochs: 3
+  learning_rate: 2e-5
+  weight_decay: 0.01
+  logging_steps: 300
+  save_strategy: epoch
+  eval_strategy: epoch
+  save_total_limit: 2
+  save_only_model: True
+  report_to: none
+
+seed: 42
+
+peft:
+  r: 6
+  lora_alpha: 8
+  lora_dropout: 0.05
+  target_modules: ['q_proj', 'k_proj']
+  bias: none
+  task_type: CAUSAL_LM
+
+prompt:
+  PROMPT_NO_QUESTION_PLUS: |
+    지문:
+    {paragraph}
+
+    질문:
+    {question}
+
+    선택지:
+    {choices}
+
+    1, 2, 3, 4, 5 중에 하나를 정답으로 고르세요.
+    정답:
+    
+  PROMPT_QUESTION_PLUS: |
+    지문:
+    {paragraph}
+
+    질문:
+    {question}
+
+    <보기>:
+    {question_plus}
+
+    선택지:
+    {choices}
+
+    1, 2, 3, 4, 5 중에 하나를 정답으로 고르세요.
+    정답:
+  
+  tokenizer_chat_template: default
+  # "{% if messages[0]['role'] == 'system' %}{% set system_message = messages[0]['content'] %}{% endif %}{% if system_message is defined %}{{ system_message }}{% endif %}{% for message in messages %}{% set content = message['content'] %}{% if message['role'] == 'user' %}{{ '<start_of_turn>user\n' + content + '<end_of_turn>\n<start_of_turn>model\n' }}{% elif message['role'] == 'assistant' %}{{ content + '<end_of_turn>\n' }}{% endif %}{% endfor %}"
+  # |
+  #   {% set system_message = None %}
+  #   {% if messages[0]['role'] == 'system' %}
+  #       {% set system_message = '<|start_header_id|>system<|end_header_id|>\n\n' + messages[0]['content'] + '<|eot_id|>' %}
+  #   {% endif %}
+
+  #   {% if system_message is not none %}
+  #       {{ bos_token + system_message }}
+  #   {% endif %}
+
+  #   {% for message in messages %}
+  #       {% if message['role'] == 'user' %}
+  #           {{ '<|start_header_id|>user<|end_header_id|>\n\n' + message['content'] + '<|eot_id|>' + '<|start_header_id|>assistant<|end_header_id|>\n\n'}}
+  #       {% elif message['role'] == 'assistant' %}
+  #           {{ message['content'] + '<|eot_id|>' }}
+  #       {% endif %}
+  #   {% endfor %}
+
+  #   {% if add_generation_prompt %}
+  #       {{ '<|start_header_id|>assistant<|end_header_id|>\n\n' }}
+  #   {% endif %}
+  
+  response_template: <start_of_turn>model # <|start_header_id|>assistant<|end_header_id|>\n\n # <start_of_turn>model
+  
+  # evaluation.py의 compute_metrics에서 정답 분리할 때 쓰는 compute_metrics_split
+  compute_metrics_end_token: <end_of_turn> # <|eot_id|> # <end_of_turn>
+
+  system_message: 지문을 읽고 질문의 답을 구하세요.
+
+  train_cot: False

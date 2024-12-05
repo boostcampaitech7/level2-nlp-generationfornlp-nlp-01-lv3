@@ -1,0 +1,15 @@
+ipykernel
+ipywidgets
+torch
+transformers
+trl
+scikit-learn
+matplotlib
+evaluate
+peft
+omegaconf
+pre-commit
+bitsandbytes
+datasets
+transformers
+peft
